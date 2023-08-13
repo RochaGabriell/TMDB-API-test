@@ -14,7 +14,7 @@ const divSearch = document.getElementById('searchTitleDiv')
 const divGenre = document.getElementById('searchGenreDiv')
 const search = document.getElementById('searchTitle')
 
-async function getDataAPI(options, url, get = '') {
+async function getDataAPI(url, get = '') {
   try {
     let response = await fetch(`https://api.themoviedb.org/3/${url}?${get}&language=pt-BR`, options)
     let moviesData = await response.json()
@@ -23,23 +23,6 @@ async function getDataAPI(options, url, get = '') {
     throw err
   }
 }
-
-function clearMovieList() {
-  const movieElements = document.querySelectorAll('.col')
-  const movieArray = Array.from(movieElements)
-
-  movieArray.forEach(element => {
-    element.remove()
-  });
-}
-
-function listPopular() {
-  getDataAPI(options, 'movie/popular', 'page=1')
-    .then(response => listMovies(response.results, 'Populares'))
-    .catch(err => console.error(`Erro ao obter os dados da API: ${err}`))
-}
-
-listPopular()
 
 function listMovies(response, textTitle) {
   titleSite.innerText = `- ${textTitle}`
@@ -77,15 +60,46 @@ function listMovies(response, textTitle) {
   addMovie()
 }
 
+function clearMovieList() {
+  const movieElements = document.querySelectorAll('.col')
+  const movieArray = Array.from(movieElements)
 
-getDataAPI(options, 'genre/movie/list')
+  movieArray.forEach(element => {
+    element.remove()
+  });
+}
+
+
+function listPopular() {
+  getDataAPI('movie/popular', 'page=1')
+    .then(response => listMovies(response.results, 'Populares'))
+    .catch(err => console.error(`Erro ao obter os dados da API: ${err}`))
+}
+
+listPopular()
+
+
+function headerOne() {
+  buttonClear.style = 'display: block'
+  divSearch.className = 'col-md-5'
+  divGenre.className = 'col-md-5'
+  search.value = ''
+}
+
+function headerTwo() {
+  buttonClear.style = 'display: none'
+  divSearch.className = 'col-md-6'
+  divGenre.className = 'col-md-6'
+  genresTag.value = 0
+}
+
+getDataAPI('genre/movie/list')
   .then(response => listGenre(response.genres))
   .catch(err => console.error(`Erro ao obter os dados da API: ${err}`))
 
 function listGenre(response) {
   response.forEach(element => {
     const option = document.createElement('option')
-
     option.value = element.id
     option.textContent = element.name
     genresTag.append(option)
@@ -94,37 +108,26 @@ function listGenre(response) {
 
 genresTag.addEventListener('change', () => {
   clearMovieList()
+  headerOne()
 
-  getDataAPI(options, 'discover/movie', `with_genres=${genresTag.value}`)
+  getDataAPI('discover/movie', `with_genres=${genresTag.value}`)
     .then(response => listMovies(response.results, genresTag.options[genresTag.selectedIndex].textContent))
     .catch(err => console.error(`Erro ao obter os dados da API: ${err}`))
-
-  buttonClear.style = 'display: block'
-  divSearch.className = 'col-md-5'
-  divGenre.className = 'col-md-5'
-  search.value = ''
 })
 
 buttonClear.addEventListener('click', () => {
   clearMovieList()
+  headerTwo()
   listPopular()
-
-  buttonClear.style = 'display: none'
-  divSearch.className = 'col-md-6'
-  divGenre.className = 'col-md-6'
-  genresTag.value = 0
 })
+
 
 search.addEventListener('keypress', (event) => {
   if (event.key === 'Enter') {
     clearMovieList()
+    headerTwo()
 
-    buttonClear.style = 'display: none'
-    divSearch.className = 'col-md-6'
-    divGenre.className = 'col-md-6'
-    genresTag.value = 0
-
-    getDataAPI(options, 'search/movie', `query=${encodeURIComponent(search.value)}&include_adult=false&page=1`)
+    getDataAPI('search/movie', `query=${encodeURIComponent(search.value)}&include_adult=false&page=1`)
       .then(response => listMovies(response.results, `Buscando por: ${search.value}`))
       .catch(err => console.error(`Erro ao obter os dados da API: ${err}`))
   }
