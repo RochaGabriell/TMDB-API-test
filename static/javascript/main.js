@@ -2,7 +2,7 @@ const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
-    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2YTg5Mjg1YjA0MjdkYTI5NjZmZWYwZDE4NjYyODAyZSIsInN1YiI6IjY0ZDQyMmM3MDM3MjY0MDExYzA1YTU4ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.RWuUzRQBZ7UNdZxQMgsn51SRXobNUeTeD4ZJiS5xGPU'
+    Authorization: ''
   }
 }
 
@@ -55,8 +55,8 @@ function listMovies(response, textTitle) {
 
       index++
       setTimeout(addMovie, 150)
-    }
-  };
+    } 
+  }
   addMovie()
 }
 
